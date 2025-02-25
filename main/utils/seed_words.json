@@ -1,0 +1,4 @@
+{
+    "20newsgroups": ["movie", "music", "book", "food", "chess"],
+    "clinc_domain": ["travel", "banking", "food"]
+}

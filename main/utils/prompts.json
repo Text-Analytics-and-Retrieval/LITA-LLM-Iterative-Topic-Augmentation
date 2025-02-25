@@ -1,0 +1,4 @@
+{
+    "clinc_domain": "Please select a topic that better corresponds with the utterance. Note that you must not generate a topic which is not in the provided topic list.\n\nPlease respond with the topic name without explanation. If none of the topics better corresponds with the utterance, you should respond with ‘None’ without explanation.",
+    "20newsgroups": "Please select a topic that better corresponds with the article. Note that you must not generate a topic which is not in the provided topic list.\n\nPlease respond with the topic name without explanation. If none of the topics better corresponds with the article, you should respond with ‘None’ without explanation."
+}
