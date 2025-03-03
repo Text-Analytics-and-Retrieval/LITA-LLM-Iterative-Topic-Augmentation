@@ -7,12 +7,18 @@ from gensim import corpora
 from gensim.models import LdaModel
 from gensim.corpora import Dictionary
 from gensim.matutils import corpus2dense
+import nltk
+from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from corextopic import corextopic as ct
 from sklearn.feature_extraction.text import CountVectorizer
 
 from evaluation import *
 from load_save_data import *
+
+nltk.download('punkt')
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
@@ -66,8 +72,19 @@ if __name__ == '__main__':
     # Iterate through each dictionary and extract the input values
     for item in data:
         docs.append(item['input'])
+    
+    def preprocess(text):
+        # Tokenize
+        words = word_tokenize(text.lower())
+        # Remove punctuation and numbers
+        words = [word for word in words if word.isalpha()]
+        # Remove stopwords
+        words = [word for word in words if word not in stop_words]
+        return ' '.join(words)
 
-    topic_model = BERTopic(top_n_words=20, nr_topics=num_cluster)
+    docs = [preprocess(doc) for doc in docs]
+
+    topic_model = BERTopic(top_n_words=10, nr_topics=num_cluster)
     topics, probs = topic_model.fit_transform(docs)
 
     topic_res = topic_model.get_topics()
@@ -213,23 +230,27 @@ if __name__ == '__main__':
     docs = [' '.join([word for word in doc.lower().split() if word not in stopwords.words('english') and word not in manual_stop_list]) for doc in docs]
 
     # Ctreat word freq matric
-    vectorizer = CountVectorizer(binary=True)
+    vectorizer = CountVectorizer()
     doc_word = vectorizer.fit_transform(docs)
     words = list(np.asarray(vectorizer.get_feature_names_out()))
 
     # Initialize CorEx model
-    topic_model = ct.Corex(n_hidden=num_cluster, words=words, seed=1)
-    topic_model.fit(doc_word, words=words, anchors=None, docs=docs)
+    topic_model = ct.Corex(n_hidden=num_cluster, max_iter=50, seed=100)
+    if args.dataset == 'clinc_domain':
+        anchors = [['travel'], ['banking'], ['food']]
+    else:
+        anchors = [['movie'], ['music'], ['book'], ['food'], ['chess']]
+    topic_model.fit(doc_word, words=words, anchors=anchors, docs=docs)
 
     # Get the list of dict of each word and its score
-    topics = topic_model.get_topics()
+    topics = topic_model.get_topics(n_words=50)
     topic_words_scores = [{word: mi for word, mi, _ in topic} for topic in topics]
 
     # Obtain the clustering results as a list and convert the 2D boolean array into a 1D array
     labels_single = np.argmax(topic_model.labels, axis=1)
 
     corEX_npmi = calculate_npmi(topic_words_scores)
-    corEX_topic_diversity = calculate_topic_diversity(topic_words_scores)
+    corEX_topic_diversity = calculate_topic_diversity(topic_words_scores, topk=100)
 
     # theta
     corEX_all_measures = {'ACC': [], 'NMI': []}

@@ -37,19 +37,22 @@ This is the implementation of the paper "LITA: An Efficient LLM-assisted Iterati
 
 ## Setting Env
 1. `conda create -n [ENV_NAME] python=3.9.18`
-2. `pip -r requirements.txt`
+2. `pip install -r requirements.txt`
 
 ## Topic modeling and refinement
-* `python main.py -dataset <str: dataset> -openai_api_key <str: API_KEY> -openai_org <str: ORG>`
-* The following are the args you can change:
-    * -model_name: LLM model name
-    * -dataset: dataset to run topic modeling {clinc_domain, 20newsgroups}
-    * -ambiguous_threshold: threshold to select ambiguous instances
-    * -seed: random seed
-    * -agglo_distance_threshold: distance threshold of hierarchcal clustering
-    * -n_cluster: initial seed topic number
-    * -openai_api_key: API KEY published by OpenAI
-    * -openai_org: OpenAI Organization
+* Step 1. Seed topics
+    * Set seed topics first in ```/results/topics/{dataset}/topics.json```
+    * Note: Check this file every time before processing the clustering and the refinement
+* Step 2. `python main.py -dataset <str: dataset> -openai_api_key <str: API_KEY> -openai_org <str: ORG>`
+    * The following are the args you can change:
+        * -model_name: LLM model name
+        * -dataset: dataset to run topic modeling {clinc_domain, 20newsgroups}
+        * -ambiguous_threshold: threshold to select ambiguous instances
+        * -seed: random seed
+        * -agglo_distance_threshold: distance threshold of hierarchcal clustering
+        * -n_cluster: initial seed topic number
+        * -openai_api_key: API KEY published by OpenAI
+        * -openai_org: OpenAI Organization
 
 ## APIs in main.py
 1. ```get_embedding()``` 
@@ -76,3 +79,4 @@ This is the implementation of the paper "LITA: An Efficient LLM-assisted Iterati
 * `baselines.py` evaluates the main results (Table 1, Table 2) in the paper, including metrics `NPMI`, `Topic Diversity`, `NMI` and `Accuracy` and all baselines except promptTopic.
 * Given parameters *dataset* and *n_cluster*, the results will save in ```/results/performance/```.
 * `python baselines.py -dataset <str: dataset> -n_cluster <int: number of cluster>`
+    * Note: Parameter `-n_cluster` must match the clustering results in the path ```/results/clustering/{dataset}/clustering_result_c={n_cluster}.npy``` to evaluate the results with different topic number.
