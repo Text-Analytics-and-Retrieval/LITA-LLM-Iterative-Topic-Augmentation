@@ -19,7 +19,7 @@ This is the implementation of the paper "LITA: An Efficient LLM-assisted Iterati
 │   ├── refinement.py
 │   ├── load_save_data.py
 │   ├── calculation.py
-│   ├── baselines.py
+│   ├── evaluate_and_run_baselines.py
 │   ├── evaluation.py
 │   └── tools.py
 │
@@ -42,7 +42,6 @@ This is the implementation of the paper "LITA: An Efficient LLM-assisted Iterati
 ## Topic modeling and refinement
 * Step 1. Seed topics
     * Set seed topics first in ```/results/topics/{dataset}/topics.json```
-    * Note: Check this file every time before processing the clustering and the refinement
 * Step 2. `python main.py -dataset <str: dataset> -openai_api_key <str: API_KEY> -openai_org <str: ORG>`
     * The following are the args you can change:
         * -model_name: LLM model name
@@ -53,6 +52,9 @@ This is the implementation of the paper "LITA: An Efficient LLM-assisted Iterati
         * -n_cluster: initial seed topic number
         * -openai_api_key: API KEY published by OpenAI
         * -openai_org: OpenAI Organization
+* Step 3. Results
+    * Main results will saved in ```/results/```
+    * Our results is saved in this [link](https://drive.google.com/drive/folders/1DNFpVh8DWvMsxD04YHVYRbn6DsKW8U0f?usp=sharing).
 
 ## APIs in main.py
 1. ```get_embedding()``` 
@@ -75,8 +77,8 @@ This is the implementation of the paper "LITA: An Efficient LLM-assisted Iterati
         * New seed embedding: ```/results/seeds_embeddings/${dataset}/seeds_embeds_c={refined_n_cluster}.npy```
         * New topics: ```/results/topics/{dataset}/topics.json```
 
-## Evaluation
-* `baselines.py` evaluates the main results (Table 1, Table 2) in the paper, including metrics `NPMI`, `Topic Diversity`, `NMI` and `Accuracy` and all baselines except promptTopic.
-* Given parameters *dataset* and *n_cluster*, the results will save in ```/results/performance/```.
-* `python baselines.py -dataset <str: dataset> -n_cluster <int: number of cluster>`
+## Evaluation and Baselines
+* `evaluate_and_run_baselines.py` evaluates the main results (Table 1, Table 2) in the paper, including metrics `NPMI`, `Topic Diversity`, `NMI` and `Accuracy` and all baselines except promptTopic.
+* `python evaluate_and_run_baselines.py -dataset <str: dataset> -n_cluster <int: number of cluster>`
+    * Given parameters *dataset* and *n_cluster*, the results will be saved in ```/results/performance/```.
     * Note: Parameter `-n_cluster` must match the clustering results in the path ```/results/clustering/{dataset}/clustering_result_c={n_cluster}.npy``` to evaluate the results with different topic number.
