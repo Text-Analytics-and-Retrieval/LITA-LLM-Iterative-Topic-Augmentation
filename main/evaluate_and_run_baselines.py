@@ -84,14 +84,14 @@ if __name__ == '__main__':
 
     docs = [preprocess(doc) for doc in docs]
 
-    topic_model = BERTopic(top_n_words=10, nr_topics=num_cluster)
+    topic_model = BERTopic(top_n_words=25, nr_topics=num_cluster)
     topics, probs = topic_model.fit_transform(docs)
 
     topic_res = topic_model.get_topics()
     bertopic_output = [dict(words) for words in topic_res.values()]
 
     bertopic_npmi = calculate_npmi(bertopic_output)
-    bertopic_topic_diversity = calculate_topic_diversity(bertopic_output)
+    bertopic_topic_diversity = calculate_topic_diversity(bertopic_output, topk=35)
 
     # theta
     bertopic_all_measures = {'ACC': [], 'NMI': []}
